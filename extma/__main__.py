@@ -32,9 +32,9 @@ def parse_args(argv: List[str]):
     )
     # Input
     parser.add_argument(
-        "infile", help="Pew '.npz' archive.",
+        "infile", help="Pew '.npz' archive, may be calibrated.",
     )
-    parser.add_argument("size", type=int, default=50, help="Size of the segments.")
+    parser.add_argument("size", type=int, default=50, help="Size of the cores in pixels.")
     parser.add_argument(
         "--nocalibration", action="store_true", help="Don't use calibration."
     )
@@ -50,26 +50,26 @@ def parse_args(argv: List[str]):
     # )
     # Segmentating
     parser.add_argument(
-        "--names", type=str, nargs="+", help="Isotopes used for segmentation.",
+        "--names", type=str, nargs="+", help="Isotopes used for creating mask during segmentation.",
     )
     parser.add_argument(
         "--threshold",
         type=str,
         default="local",
         choices=["local", "otsu", "percentile"],
-        help="Segmentation thresholding method.",
+        help="Threshold method used for mask during segmentation.",
     )
     parser.add_argument(
         "--value",
         type=float,
-        help="Value used for some thresholding. percentile=percentile.",
+        help="Value used for some thresholding methods. percentile=<%>.",
     )
     # Options
     parser.add_argument(
-        "--rotate", type=int, choices=[90, 180, 270], help="Rotate data."
+        "--rotate", type=int, choices=[90, 180, 270], help="Rotate the data, in degrees."
     )
     parser.add_argument(
-        "--swapxy", action="store_true", help="Switch row / column labels.",
+        "--swapxy", action="store_true", help="Swap row and column labels.",
     )
     # Output
     parser.add_argument(
@@ -80,7 +80,7 @@ def parse_args(argv: List[str]):
         nargs="?",
         const="info",
         choices=["info"] + list(op_dict.keys()) + list(colocal_dict.keys()),
-        help="Print segment data.",
+        help="Print result of operation performed on segmented data.",
     )
     parser.add_argument(
         "--output", help="Output to a file instead of stdout.",
