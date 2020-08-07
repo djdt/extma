@@ -2,7 +2,7 @@
 Extraction of LA-ICP-MS data from microarrays or spotted tissue.
 Data is masked using the selected threshold method, cleaned up and large objects split using watershed segementation.
 
-#Installation
+# Installation
 
 Run `pip install -e .` in the root directory to install.
 
