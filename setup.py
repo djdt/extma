@@ -1,5 +1,4 @@
 from setuptools import setup
-import numpy as np
 
 
 setup(
@@ -13,7 +12,7 @@ setup(
         "numpy",
         "scipy",
         "scikit-image",
-        "pew@git+https://github.com/djdt/pew#egg=pew-4.0.3",
+        "pew@git+https://github.com/djdt/pew#egg=pew-0.4.4",
     ],
     entry_points={"console_scripts": ["extma=extma.__main__:main"]},
 )
