@@ -62,7 +62,7 @@ def parse_args(argv: List[str]):
     parser.add_argument(
         "--value",
         type=float,
-        help="Value used for some thresholding methods. percentile=<%>.",
+        help="Value used for some thresholding methods. percentile=<%%>.",
     )
     # Options
     parser.add_argument(
