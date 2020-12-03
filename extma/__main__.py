@@ -231,7 +231,7 @@ def validate_names(names: List[str], valid_names: List[str]) -> None:
 def main():
     args = parse_args(sys.argv)
 
-    laser = io.npz.load(args.infile)[0]
+    laser = io.npz.load(args.infile)
     data = laser.get(calibrate=not args.nocalibration)
 
     if args.outnames is None:
