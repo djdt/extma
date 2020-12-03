@@ -11,7 +11,7 @@ from matplotlib.text import Text
 from matplotlib.backend_bases import KeyEvent
 from matplotlib.patheffects import withStroke
 
-from pew import io
+from pewlib import io
 
 from extma import MicroArray
 

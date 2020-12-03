@@ -3,7 +3,7 @@ import numpy as np
 from scipy import ndimage as ndi
 from skimage import filters, feature, segmentation
 
-from pew.lib.calc import normalise
+from pewlib.process.calc import normalise
 
 from extma.core import Core
 from extma.lib import cluster_idx, enlarge_border, remove_border

@@ -5,8 +5,8 @@ import numpy as np
 
 from skimage.color import label2rgb
 
-from pew import io
-from pew.lib.colocal import pearsonr, li_icq
+from pewlib import io
+from pewlib.process.colocal import pearsonr, li_icq
 
 from extma import Core, MicroArray
 
