@@ -259,13 +259,13 @@ def split_tma(
 
         core_data = laser.data[bounds[1, 0] : bounds[1, 1], bounds[0, 0] : bounds[0, 1]]
 
-        laser = Laser(
+        split = Laser(
             core_data,
             calibration=laser.calibration,
             config=laser.config,
             info={"Name": tma.core_text(core), "Split Name": laser.info["Name"]},
         )
-        io.npz.save(directory.joinpath(tma.core_text(core)).with_suffix(".npz"), laser)
+        io.npz.save(directory.joinpath(tma.core_text(core)).with_suffix(".npz"), split)
 
 
 def validate_names(names: List[str], valid_names: List[str]) -> None:
