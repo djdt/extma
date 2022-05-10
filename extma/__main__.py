@@ -16,6 +16,8 @@ from extma import Core, MicroArray
 
 from typing import Callable, List, TextIO, Tuple
 
+from extma.display import SegmentDisplay
+
 
 op_dict = {
     "mean": np.mean,
@@ -89,6 +91,11 @@ def parse_args(argv: List[str]):
     )
     # Output
     parser.add_argument(
+        "--browse",
+        action="store_true",
+        help="Use matplotlib to simulate and browse segmentation methods.",
+    )
+    parser.add_argument(
         "--draw", action="store_true", help="Use matplotlib to draw the tma."
     )
     parser.add_argument(
@@ -138,6 +145,28 @@ def core_text_to_position(text: str, swap_xy: bool = False) -> Tuple[slice, slic
     if swap_xy:
         xs, ys = ys, xs
     return xs, ys
+
+
+def simulate(data: np.ndarray, size: int, isotopes: List[str], swapxy: bool) -> None:
+    import matplotlib.pyplot as plt
+
+    figsize = (6 * data.shape[1] / data.shape[0], 6)
+    fig, axes = plt.subplots(figsize=figsize, dpi=100, frameon=False, tight_layout=True)
+
+    seg_methods = [
+        ("local", None),
+        ("otsu", None),
+        ("percentile", 60.0),
+        ("percentile", 65.0),
+        ("percentile", 70.0),
+        ("percentile", 75.0),
+        ("percentile", 80.0),
+    ]
+    seg = SegmentDisplay(axes, data, size, seg_methods, isotopes, swapxy)
+    seg.draw_tma(seg.get_tma())
+
+    fig.canvas.mpl_connect("key_press_event", seg.on_keypress)
+    plt.show()
 
 
 def draw_tma(tma: MicroArray, output: Path = None, swap_xy_label: bool = False) -> None:
@@ -293,6 +322,10 @@ def main():
 
     if args.rotate:
         data = np.rot90(data, k=4 - args.rotate // 90, axes=(0, 1))
+
+    if args.browse:
+        simulate(data, args.size, data.dtype.names, args.swapxy)
+        return
 
     tma = MicroArray(
         data,

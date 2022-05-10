@@ -1,41 +1,18 @@
-import argparse
-import sys
-
 import numpy as np
 from skimage.color import label2rgb
 
-import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.image import AxesImage
 from matplotlib.text import Text
 from matplotlib.backend_bases import KeyEvent
 from matplotlib.patheffects import withStroke
 
-from pewlib import io
-
 from extma import MicroArray
 
 from typing import List, Optional, Tuple
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(
-        prog=sys.argv[0],
-        description="Parse, segment and extrac data from micro-arrays.",
-    )
-
-    parser.add_argument(
-        "infile", help="Pew '.npz' archive.",
-    )
-    parser.add_argument("size", type=int, default=50, help="Size of the segments.")
-    parser.add_argument(
-        "--isotopes", nargs="+", help="Limit which isotopes are output."
-    )
-    args = parser.parse_args(sys.argv[1:])
-    return args
-
-
-class SegmentTracker(object):
+class SegmentDisplay(object):
     def __init__(
         self,
         ax: Axes,
@@ -43,11 +20,12 @@ class SegmentTracker(object):
         size: int,
         methods: List[Tuple[str, Optional[float]]],
         names: List[str],
+        swap_xy_label: bool = False,
     ):
         self.ax = ax
 
         self.coretexts: List[Text] = []
-        self.image: AxesImage = None
+        self.image: Optional[AxesImage] = None
 
         self.data = data
         self.size = size
@@ -58,6 +36,8 @@ class SegmentTracker(object):
         self.midx = 0
         self.iidx = 0
         self.ntic = False
+
+        self.swap_xy_label = swap_xy_label
 
         self.init_ax()
 
@@ -106,10 +86,10 @@ class SegmentTracker(object):
 
         for core in tma.coreslist:
             self.coretexts.append(
-                axes.text(
+                self.ax.text(
                     core.center[0],
                     core.center[1],
-                    tma.core_text(core),
+                    tma.core_text(core, swap_xy=self.swap_xy_label),
                     ha="center",
                     va="center",
                     color="white",
@@ -135,7 +115,7 @@ class SegmentTracker(object):
         elif event.key == "right":
             self.ntic = False
             self.iidx += 1
-            if self.iidx > len(self.methods) - 1:
+            if self.iidx > len(self.names) - 1:
                 self.iidx = 0
         elif event.key == "left":
             self.ntic = False
@@ -147,33 +127,3 @@ class SegmentTracker(object):
         else:
             return
         self.draw_tma(self.get_tma())
-
-
-if __name__ == "__main__":
-    args = parse_args()
-
-    data = io.npz.load(args.infile)[0].get(calibrate=False)
-
-    if args.isotopes is None:
-        args.isotopes = data.dtype.names
-
-    seg_methods = [
-        ("local", None),
-        ("otsu", None),
-        ("percentile", 60.0),
-        ("percentile", 65.0),
-        ("percentile", 70.0),
-        ("percentile", 75.0),
-        ("percentile", 80.0),
-    ]
-
-    figsize = (6 * data.shape[1] / data.shape[0], 6)
-
-    fig, axes = plt.subplots(figsize=figsize, dpi=100, frameon=False, tight_layout=True)
-
-    seg = SegmentTracker(axes, data, args.size, seg_methods, args.isotopes)
-    seg.draw_tma(seg.get_tma())
-
-    fig.canvas.mpl_connect("key_press_event", seg.on_keypress)
-
-    plt.show()
