@@ -1,15 +1,14 @@
+from typing import List, Optional, Tuple
+
 import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.backend_bases import KeyEvent
+from matplotlib.image import AxesImage
+from matplotlib.patheffects import withStroke
+from matplotlib.text import Text
 from skimage.color import label2rgb
 
-from matplotlib.axes import Axes
-from matplotlib.image import AxesImage
-from matplotlib.text import Text
-from matplotlib.backend_bases import KeyEvent
-from matplotlib.patheffects import withStroke
-
 from extma import MicroArray
-
-from typing import List, Optional, Tuple
 
 
 class SegmentDisplay(object):

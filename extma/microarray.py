@@ -1,19 +1,17 @@
+from typing import Callable, List
+
 import numpy as np
-
-from scipy import ndimage as ndi
-from skimage import filters, feature, segmentation
-
 from pewlib.process.calc import normalise
+from scipy import ndimage as ndi
+from skimage import feature, filters, segmentation
 
 from extma.core import Core
 from extma.lib import cluster_idx, enlarge_border, remove_border
 
-from typing import Callable, List
-
 
 def normalised_total_counts(
     image: np.ndarray,
-    names: List[str] = None,
+    names: List[str] | None = None,
     out_min: float = 0.0,
     out_max: float = 1.0,
     clip: bool = True,
@@ -64,10 +62,9 @@ class MicroArray(object):
         data: np.ndarray,
         core_size: int = 50,
         threshold_method: str = "local",
-        threshold_names: List[str] = None,
-        threshold_value: float = None,
-        background_value: float = None,
-        # masks: List[str] = None,
+        threshold_names: List[str] | None = None,
+        threshold_value: float | None = None,
+        background_value: float | None = None,
     ):
         self.data = data
         self.size = core_size
@@ -79,12 +76,6 @@ class MicroArray(object):
         self.labels = self._segment_cores(
             self.normal, self.size, threshold_method, threshold_value, background_value
         )
-
-#         if masks is not None:
-#             mask = individual_multiotsu_threshold_mask(
-#                 normalised_total_counts(self.data, names=masks), self.labels
-#             )
-#             self.labels[~mask] = 0
 
         self.cores = self._generate_cores()
 
@@ -102,7 +93,7 @@ class MicroArray(object):
             x, y = y, x
         return MicroArray.APLHA_LABELS[x] + MicroArray.NUMERIC_LABELS[y]
 
-    def core_op(self, core: Core, op: Callable, *args) -> float:
+    def core_op(self, core: Core, op: Callable, *args) -> float | np.ndarray:
         v = tuple(
             op(self.data[core.image][name], *args) for name in self.data.dtype.names
         )
@@ -131,8 +122,8 @@ class MicroArray(object):
         x: np.ndarray,
         size: int,
         method: str,
-        method_value: float = None,
-        min_value: float = None,
+        method_value: float | None = None,
+        min_value: float | None = None,
     ) -> np.ndarray:
         mask = np.zeros(np.array(x.shape) + (2 * size), dtype=bool)
         if method == "local":
@@ -140,7 +131,7 @@ class MicroArray(object):
             thresh = filters.threshold_local(x, block, mode="wrap", param=size)
         elif method == "otsu":
             thresh = filters.threshold_otsu(x, size)
-        elif method == "percentile":
+        elif method == "percentile" and isinstance(method_value, float):
             thresh = np.percentile(x, method_value)
         else:
             raise ValueError("Invalid method.")
@@ -160,7 +151,7 @@ class MicroArray(object):
         mask = ndi.binary_erosion(mask)
 
         # Remove any small objects: from skimage remove_small_objects
-        mask = remove_objects(mask, int(size ** 2 * 0.25))
+        mask = remove_objects(mask, int(size**2 * 0.25))
 
         mask = remove_border(mask, size)
 
@@ -172,13 +163,16 @@ class MicroArray(object):
         labels, num_labels = ndi.label(mask)
         lrg_obj = np.zeros_like(mask, dtype=bool)
         for label in range(1, num_labels):
-            if np.count_nonzero(labels == label) > size ** 2 * 1.5:
+            if np.count_nonzero(labels == label) > size**2 * 1.5:
                 lrg_obj[labels == label] = True
 
         dist = ndi.distance_transform_edt(lrg_obj)
 
         peak_idx = feature.peak_local_max(
-            dist, labels=lrg_obj, min_distance=size, exclude_border=0,
+            dist,
+            labels=lrg_obj,
+            min_distance=size,
+            exclude_border=0,
         )
         peak_mask = np.zeros_like(labels, dtype=bool)
         peak_mask[peak_idx[:, 0], peak_idx[:, 1]] = True

@@ -50,9 +50,6 @@ def parse_args(argv: List[str]):
     parser.add_argument(
         "--outnames", nargs="+", help="Limit which isotopes are output."
     )
-    # parser.add_argument(
-    #     "--outmasks", nargs="+", help="Isotopes used for individual core otsu masking."
-    # )
     # Segmentating
     parser.add_argument(
         "--names",
@@ -164,7 +161,7 @@ def simulate(data: np.ndarray, size: int, isotopes: List[str], swapxy: bool) -> 
     plt.show()
 
 
-def draw_tma(tma: MicroArray, output: Path = None, swap_xy_label: bool = False) -> None:
+def draw_tma(tma: MicroArray, output: Path | None = None, swap_xy_label: bool = False) -> None:
     import matplotlib.pyplot as plt
     from matplotlib.patheffects import withStroke
 
@@ -198,7 +195,7 @@ def print_tma(
     cores: List[Core],
     op: Callable,
     elements: List[str],
-    output: TextIO = None,
+    output: TextIO | None = None,
 ) -> None:
     if output is None:
         output = sys.stdout
@@ -216,7 +213,7 @@ def print_tma_colocal(
     cores: List[Core],
     op: Callable,
     isotopes: List[str],
-    output: TextIO = None,
+    output: TextIO | None = None,
 ) -> None:
     if output is None:
         output = sys.stdout
@@ -239,7 +236,7 @@ def print_tma_colocal(
 def print_tma_info(
     tma: MicroArray,
     cores: List[Core],
-    output: TextIO = None,
+    output: TextIO | None = None,
 ) -> None:
     if output is None:
         output = sys.stdout
@@ -312,9 +309,6 @@ def main():
     if args.names is not None:
         validate_names(args.names, data.dtype.names)
 
-    # if args.outmasks is not None:
-    #     validate_names(args.outmasks, data.dtype.names)
-
     if args.rotate:
         data = np.rot90(data, k=4 - args.rotate // 90, axes=(0, 1))
 
@@ -328,7 +322,6 @@ def main():
         threshold_names=args.names,
         threshold_method=args.threshold,
         threshold_value=args.value,
-        # masks=args.outmasks,
     )
 
     cores = tma.cores

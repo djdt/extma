@@ -24,7 +24,7 @@ def normalise(x: np.ndarray, vmin: float = 0.0, vmax: float = 1.0) -> np.ndarray
         x: Array
         vmin: New minimum
         vmax: New maxmimum
-"""
+    """
     x = (x - x.min()) / x.max()
     x *= vmax - vmin
     x += vmin
