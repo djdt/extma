@@ -1,25 +1,20 @@
 import argparse
 import sys
+from pathlib import Path
+from typing import Callable, List, TextIO, Tuple
 
 import numpy as np
 import numpy.lib.recfunctions as rfn
+from pewlib import io
 from pewlib.laser import Laser
-
+from pewlib.process.colocal import li_icq, pearsonr
 from skimage.color import label2rgb
 
-from pathlib import Path
-
-from pewlib import io
-from pewlib.process.colocal import pearsonr, li_icq
-
 from extma import Core, MicroArray
-
-from typing import Callable, List, TextIO, Tuple
-
 from extma.display import SegmentDisplay
 
-
 op_dict = {
+    "sum": np.sum,
     "mean": np.mean,
     "median": np.median,
     "std": np.std,
