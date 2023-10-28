@@ -12,7 +12,7 @@ setup(
         "numpy",
         "scipy",
         "scikit-image",
-        "pewlib",
+        "pewlib>=0.8.3",
     ],
     entry_points={"console_scripts": ["extma=extma.__main__:main"]},
 )
